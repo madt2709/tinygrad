@@ -11,7 +11,7 @@ def prod(x:Iterable): return functools.reduce(operator.__mul__, x, 1)
 OSX = platform.system() == "Darwin"
 CI = os.getenv("CI", "") != ""
 
-def dedup(x): return list(dict.fromkeys(x))   # retains list order
+
 def argfix(*x): return tuple(x[0]) if x and x[0].__class__ in (tuple, list) else x
 def argsort(x): return type(x)(sorted(range(len(x)), key=x.__getitem__)) # https://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python
 def all_same(items): return all(x == items[0] for x in items)

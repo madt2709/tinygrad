@@ -25,7 +25,7 @@ P2P = getenv("P2P", 0)
 # TODO: movement ops that only change shape are really nops. treat them as such
 REMOVE_MOVEMENT_NOPS, MERGE_ELEMENTWISE_INTO_REDUCE, SHUFFLE_MOVEMENT_OPS, MERGE_ELEMENTWISE_OPS = OPT>=1, OPT>=1, OPT>=1, OPT>=1
 MERGE_ONE_REDUCE_INTO_ELEMENTWISE, SHUFFLE_PAD_OPS, SIMPLIFY_SUM_RESHAPE_EXPAND_SUM = OPT>=2, OPT>=2, OPT>=2   # shuffle pad ops is fine now since we only push to merge binops
-PUSH_PERMUTES, PUSH_CONTIGUOUS = OPT>=3, OPT>=3
+
 
 def _simplify_sum_reshape_expand_sum(self:LazyBuffer, src: Any, prev_src: Any) -> Optional[LazyOp]:
   if prev_src.op.op == MovementOps.EXPAND:

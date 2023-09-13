@@ -13,7 +13,6 @@ if TYPE_CHECKING: from tinygrad.lazy import LazyBuffer
 
 # **** debugging and graphing ****
 
-G = nx.DiGraph() if nx is not None else None
 cnts: Dict[OpType, int] = defaultdict(int)
 if DEBUG >= 2:
   def print_globalcounters():

@@ -74,7 +74,7 @@ class View(NamedTuple):
   @functools.lru_cache(maxsize=None)  # pylint: disable=method-cache-max-size-none
   def stride(self, mul: Tuple[int, ...]) -> View:
     # except for the negative case, you can build this from the others. invertible in the negative case
-    assert all(isinstance(x, int) and x != 0 for x in mul), f"invalid stride {mul} for {self.shape}"
+    assert all(x in [1,-1] for x in mul), f"invalid stride {mul} for {self.shape}"
     strides = tuple([z*m for z,m in zip(self.strides, mul)])
     new_shape = tuple([(s+(abs(m)-1))//abs(m) for s,m in zip(self.shape, mul)])
     offset = sum([(s-1)*z for s,z,m in zip(self.shape, self.strides, mul) if m < 0])

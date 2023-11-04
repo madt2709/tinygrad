@@ -110,7 +110,7 @@ class ShapeTracker:
       to_apply.append((MovementOps.RESHAPE, prod(new_shape)))
       last_index_used = sum((x-1)*y for x,y in zip(new_shape, v.strides))
       # remove unnecessary data 
-      to_apply.append((MovementOps.SHRINK, ((offset, offset + last_index_used + 1),)))
+      to_apply.append((MovementOps.SHRINK, ((real_offset, real_offset + last_index_used + 1),)))
       # reshape to correct shape 
       to_apply.append((MovementOps.RESHAPE, new_shape))
       # update strides

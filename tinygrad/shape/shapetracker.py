@@ -6,7 +6,7 @@ from typing import Tuple, List, Optional, Dict, cast
 from tinygrad.ops import MovementOps
 from tinygrad.helpers import prod, DEBUG, dedup
 from tinygrad.shape.symbolic import Variable, MulNode, NumNode, Node, SumNode, sint
-from tinygrad.shape.view import View
+from tinygrad.shape.view import View, strides_for_shape
 
 @functools.lru_cache(maxsize=None)
 def to_shape_strides(shape:Tuple[int, ...], strides:Tuple[int, ...]) -> Tuple[Tuple[int, int], ...]:
@@ -104,7 +104,18 @@ class ShapeTracker:
       # then, we make it the correct shape
       # then, we apply permutations
       # TODO: don't use as_strided
-      to_apply.append((MovementOps.AS_STRIDED, (tuple([s if st != 0 else 1 for s,st in zip(real_shape, v.strides)]), v.strides, real_offset)))
+      # to_apply.append((MovementOps.AS_STRIDED, (tuple([s if st != 0 else 1 for s,st in zip(real_shape, v.strides)]), v.strides, real_offset)))
+      new_shape = tuple([s if st != 0 else 1 for s,st in zip(real_shape, v.strides)])
+      # TODO: Don't flatten shape first.
+      to_apply.append((MovementOps.RESHAPE, prod(new_shape)))
+      last_index_used = sum((x-1)*y for x,y in zip(new_shape, v.strides))
+      # remove unnecessary data 
+      to_apply.append((MovementOps.SHRINK, ((offset, offset + last_index_used + 1),)))
+      # reshape to correct shape 
+      to_apply.append((MovementOps.RESHAPE, new_shape))
+      # update strides
+      stride_factors = (y/x for x,y in zip(v.strides, strides_for_shape(new_shape)))
+      to_apply.append((MovementOps.STRIDE, stride_factors))  
       # then, we apply pre expand pads
       if v.mask is not None:
         pre_expand_pads = tuple((x,s-y) if st != 0 else (0,0) for (x,y),s,st in zip(v.mask, v.shape, v.strides))

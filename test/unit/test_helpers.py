@@ -161,6 +161,11 @@ class TestFetch(unittest.TestCase):
       assert pimg.size == (77, 77), pimg.size
     assert img.parent.name == "images"
 
+  def test_fetch_gzip(self):
+    decompressed_data = fetch("https://github.com/tinygrad/tinygrad/archive/refs/tags/v0.9.2.tar.gz", allow_caching=False, gunzip=True)
+    compressed_data = fetch("https://github.com/tinygrad/tinygrad/archive/refs/tags/v0.9.2.tar.gz", allow_caching=False, gunzip=False)
+    assert(len(compressed_data.read_bytes())<len(decompressed_data.read_bytes()))
+
 class TestFullyFlatten(unittest.TestCase):
   def test_fully_flatten(self):
     self.assertEqual(fully_flatten([[1, 3], [1, 2]]), [1, 3, 1, 2])
